@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Hammer from 'hammerjs';
   document.addEventListener("DOMContentLoaded", function () {
     // Wait till the browser is ready to render the game (avoids glitches)
     window.requestAnimationFrame(function () {
@@ -362,7 +363,7 @@
 
     var element = document.createElement("div");
     var position = tile.previousPosition || { x: tile.x, y: tile.y };
-    positionClass = this.positionClass(position);
+    const positionClass = this.positionClass(position);
 
     // We can't use classlist because it somehow glitches when replacing classes
     var classes = ["tile", "tile-" + tile.value, positionClass];

@@ -38,6 +38,7 @@
 		"webpack-dev-server": "^3.11.2"
 	},
 	"dependencies": {
+		"hammerjs": "^2.0.8",
 		"serve": "^11.3.2"
 	},
 	"browserslist": [
