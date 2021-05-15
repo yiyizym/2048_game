@@ -77,33 +77,32 @@ class GameManager {
       traversals.y.forEach(y => {
         const pos = {x, y}
         const cell = this.grid.cellContent(pos);
-        if(cell) { 
-          const farthestPosition = this.findFarthestPosition(pos, vector);
-          const next = this.grid.cellContent(farthestPosition.next);
-          // Only one merger per row traversal
-          if(next && next.value === cell.value && !next.mergedFrom) {
-            const merged = new Tile(farthestPosition.next, cell.value * 2);
-            merged.mergedFrom = [cell, next];
+        if(!cell) { return }
+        const farthestPosition = this.findFarthestPosition(pos, vector);
+        const next = this.grid.cellContent(farthestPosition.next);
+        // Only one merger per row traversal
+        if(next && next.value === cell.value && !next.mergedFrom) {
+          const merged = new Tile(farthestPosition.next, cell.value * 2);
+          merged.mergedFrom = [cell, next];
 
-            this.grid.insertTile(merged);
-            this.grid.removeTile(cell);
+          this.grid.insertTile(merged);
+          this.grid.removeTile(cell);
 
-            // Converge the two tiles' positions
-            cell.updatePosition(farthestPosition.next);
+          // Converge the two tiles' positions
+          cell.updatePosition(farthestPosition.next);
 
-            // Update the score
-            this.score += merged.value;
+          // Update the score
+          this.score += merged.value;
 
-            // The mighty 2048 tile
-            if (merged.value === 2048) this.won = true;
+          // The mighty 2048 tile
+          if (merged.value === 2048) this.won = true;
 
-          } else {
-            this.moveTile(cell, farthestPosition.farthest);
-          }
+        } else {
+          this.moveTile(cell, farthestPosition.farthest);
+        }
 
-          if(!this.positionsEqual(pos, cell)) {
-            moved = true;
-          }
+        if(!this.positionsEqual(pos, cell)) {
+          moved = true;
         }
       })
     })
@@ -182,15 +181,14 @@ class GameManager {
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
         cell = this.grid.cellContent({ x, y });
-        if (cell) { 
-          for (let direction = 0; direction < 4; direction++) {
-            const vector = this.getVector(direction as 0|1|2|3);
-            const pos = { x: x + vector.x, y: y + vector.y };
-            const other = this.grid.cellContent(pos);
-            
-            if (other && other.value === cell.value) {
-              return true; // These two tiles can be merged
-            }
+        if (!cell) { return }
+        for (let direction = 0; direction < 4; direction++) {
+          const vector = this.getVector(direction as 0|1|2|3);
+          const pos = { x: x + vector.x, y: y + vector.y };
+          const other = this.grid.cellContent(pos);
+          
+          if (other && other.value === cell.value) {
+            return true; // These two tiles can be merged
           }
         }
       }
