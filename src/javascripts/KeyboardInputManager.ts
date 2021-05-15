@@ -1,9 +1,10 @@
 import * as Hammer from 'hammerjs';
 
 class KeyboardInputManager {
-  events: Map<string, any>;
+  events: Object;
 
   constructor() {
+    this.events = {};
     this.listen();
   }
 
