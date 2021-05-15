@@ -1,19 +1,30 @@
-function Tile(position, value) {
-  this.x = position.x;
-  this.y = position.y;
-  this.value = value || 2;
-
-  this.previousPosition = null;
-  this.mergedFrom = null; // Tracks tiles that merged together
+interface Position {
+  x: number;
+  y: number;
 }
 
-Tile.prototype.savePosition = function () {
-  this.previousPosition = { x: this.x, y: this.y };
-};
+class Tile {
+  x: number;
+  y: number;
+  value: number;
+  previousPosition: Position|null;
+  mergedFrom: any[]|null; // TODO
 
-Tile.prototype.updatePosition = function (position) {
-  this.x = position.x;
-  this.y = position.y;
-};
+  constructor(position: Position, value) {
+    this.x = position.x;
+    this.y = position.y;
+    this.value = value || 2;
+  
+    this.previousPosition = null;
+    this.mergedFrom = null; // Tracks tiles that merged together
+  }
+  savePosition() {
+    this.previousPosition = { x: this.x, y: this.y };
+  }
+  updatePosition(position) {
+    this.x = position.x;
+    this.y = position.y;
+  }
+}
 
 export default Tile;
