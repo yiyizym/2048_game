@@ -1,16 +1,12 @@
 <script lang="ts">
-
+  import { onMount } from 'svelte';
   import GameManager from './javascripts/GameManager';
   import KeyboardInputManager from './javascripts/KeyboardInputManager';
   import HTMLActuator from './javascripts/HTMLActuator';
 
-  document.addEventListener("DOMContentLoaded", function () {
-    // Wait till the browser is ready to render the game (avoids glitches)
-    window.requestAnimationFrame(function () {
-      var manager = new GameManager(4, KeyboardInputManager, HTMLActuator);
-    });
-  });
-
+  onMount(() => {
+    new GameManager(4, KeyboardInputManager, HTMLActuator);
+  })
 </script>
 
 <main class="container">
