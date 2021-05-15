@@ -15,7 +15,7 @@ class HTMLActuator {
     this.score = 0;
   }
 
-  actuate = (grid: Grid, metadata: any): void => {
+  actuate = (grid: Grid, metadata: {score: number; won: boolean; over: boolean}): void => {
     window.requestAnimationFrame((): void => {
       this.clearContainer(this.tileContainer);
 

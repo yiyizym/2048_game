@@ -1,6 +1,6 @@
 import Tile, { Position } from './Tile';
 
-type Cell = Tile | null;
+export type Cell = Tile | null;
 
 class Grid {
   size: number;
@@ -26,8 +26,8 @@ class Grid {
   availablePositions(): Position[] {
     const cells: Position[] = [];
 
-    this.eachCell((x:number, y: number, tile: Tile) => {
-      if(!tile) {
+    this.eachCell((x:number, y: number, cell: Cell) => {
+      if(!cell) {
         cells.push({x,y})
       }
     })
@@ -40,40 +40,40 @@ class Grid {
   }
 
   // Check if the specified cell is taken
-  cellAvailable(cell: Cell): boolean {
-    return !this.cellOccupied(cell);
+  cellAvailable(pos: Position): boolean {
+    return !this.cellOccupied(pos);
   }
 
-  cellOccupied(cell: Cell): boolean {
-    return !!this.cellContent(cell);
+  cellOccupied(pos: Position): boolean {
+    return !!this.cellContent(pos);
   }
 
-  cellContent(cell: Cell): Cell {
-    if(!!cell && this.withinBounds(cell)) {
-      return this.cells[cell.x][cell.y]
+  cellContent(pos: Position): Cell {
+    if(!!pos && this.withinBounds(pos)) {
+      return this.cells[pos.x][pos.y]
     } else {
       return null
     }
   }
 
-  insertTile(tile: Cell): void {
+  insertTile(tile: Tile): void {
     this.cells[tile.x][tile.y] = tile;
   }
 
-  removeTile(tile: Cell): void {
+  removeTile(tile: Tile): void {
     this.cells[tile.x][tile.y] = null;
   }
 
-  withinBounds(cell: Cell) {
+  withinBounds(pos: Position) {
     return (
-      cell.x >= 0 &&
-      cell.x < this.size &&
-      cell.y >= 0 &&
-      cell.y < this.size
+      pos.x >= 0 &&
+      pos.x < this.size &&
+      pos.y >= 0 &&
+      pos.y < this.size
     );
   }
 
-  eachCell(cb: (x:number, y: number, tile: Tile) => any): void {
+  eachCell(cb: (x:number, y: number, cell: Cell) => any): void {
     for(let i = 0; i < this.size; i++) {
       for(let j = 0; j < this.size; j++) {
         cb(i, j, this.cells[i][j])
