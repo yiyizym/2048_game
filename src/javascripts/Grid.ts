@@ -1,15 +1,10 @@
-interface Cell {
-  x: number;
-  y: number;
-}
+import Tile, { Position } from './Tile';
 
-
-type Thing = Cell | null;
-type Tile = Thing;
+type Cell = Tile | null;
 
 class Grid {
   size: number;
-  cells: Thing[][];
+  cells: Cell[][];
   constructor(size = 4) {
     this.size = size;
     this.cells = [];
@@ -21,15 +16,15 @@ class Grid {
   }
 
   // Find the first available random position
-  randomAvailableCell(): Cell {
-    const cells = this.availableCells();
-    if(cells.length) {
-      return cells[Math.floor(Math.random() * cells.length)];
+  randomAvailablePosition(): Position {
+    const position = this.availablePositions();
+    if(position.length) {
+      return position[Math.floor(Math.random() * position.length)];
     }
   }
 
-  availableCells(): Cell[] {
-    const cells: Cell[] = [];
+  availablePositions(): Position[] {
+    const cells: Position[] = [];
 
     this.eachCell((x:number, y: number, tile: Tile) => {
       if(!tile) {
@@ -41,19 +36,19 @@ class Grid {
   }
   // Check if there are any cells available
   cellsAvailable(): boolean {
-    return !!this.availableCells().length;
+    return !!this.availablePositions().length;
   }
 
   // Check if the specified cell is taken
-  cellAvailable(cell: Thing): boolean {
+  cellAvailable(cell: Cell): boolean {
     return !this.cellOccupied(cell);
   }
 
-  cellOccupied(cell: Thing): boolean {
+  cellOccupied(cell: Cell): boolean {
     return !!this.cellContent(cell);
   }
 
-  cellContent(cell: Thing): Thing {
+  cellContent(cell: Cell): Cell {
     if(!!cell && this.withinBounds(cell)) {
       return this.cells[cell.x][cell.y]
     } else {

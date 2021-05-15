@@ -1,4 +1,4 @@
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }
@@ -8,7 +8,7 @@ class Tile {
   y: number;
   value: number;
   previousPosition: Position|null;
-  mergedFrom: any[]|null; // TODO
+  mergedFrom: Tile[]|null;
 
   constructor(position: Position, value) {
     this.x = position.x;

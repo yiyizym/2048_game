@@ -1,120 +1,118 @@
-function HTMLActuator() {
-    this.tileContainer = document.getElementsByClassName("tile-container")[0];
-    this.scoreContainer = document.getElementsByClassName("score-container")[0];
-    this.messageContainer = document.getElementsByClassName("game-message")[0];
+import Grid from './Grid';
+import Tile, { Position } from './Tile';
+
+class HTMLActuator {
+  tileContainer: Element;
+  scoreContainer: Element;
+  messageContainer: Element;
+  score: number;
+
+  constructor() {
+    this.tileContainer = document.querySelector(".tile-container");
+    this.scoreContainer = document.querySelector(".score-container");
+    this.messageContainer = document.querySelector(".game-message");
 
     this.score = 0;
   }
 
-  HTMLActuator.prototype.actuate = function (grid, metadata) {
-    var self = this;
+  actuate = (grid: Grid, metadata: any): void => {
+    window.requestAnimationFrame((): void => {
+      this.clearContainer(this.tileContainer);
 
-    window.requestAnimationFrame(function () {
-      self.clearContainer(self.tileContainer);
-
-      grid.cells.forEach(function (column) {
-        column.forEach(function (cell) {
+      grid.cells.forEach(column => {
+        column.forEach(cell => {
           if (cell) {
-            self.addTile(cell);
+            this.addTile(cell);
           }
         });
       });
 
-      self.updateScore(metadata.score);
+      this.updateScore(metadata.score);
 
-      if (metadata.over) self.message(false); // You lose
-      if (metadata.won) self.message(true); // You win!
+      if (metadata.over) this.message(false); // You lose
+      if (metadata.won) this.message(true); // You win!
     });
-  };
+  }
 
-  HTMLActuator.prototype.restart = function () {
-    this.clearMessage();
-  };
-
-  HTMLActuator.prototype.clearContainer = function (container) {
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
-  };
-
-  HTMLActuator.prototype.addTile = function (tile) {
-    var self = this;
-
-    var element = document.createElement("div");
-    var position = tile.previousPosition || { x: tile.x, y: tile.y };
+  addTile(tile: Tile): void {
+    const element = document.createElement("div");
+    const position = tile.previousPosition || { x: tile.x, y: tile.y };
     const positionClass = this.positionClass(position);
-
     // We can't use classlist because it somehow glitches when replacing classes
-    var classes = ["tile", "tile-" + tile.value, positionClass];
+    const classes = ["tile", `tile-${tile.value}`, positionClass];
     this.applyClasses(element, classes);
+    element.textContent = tile.value.toString();
 
-    element.textContent = tile.value;
-
-    if (tile.previousPosition) {
+    if(tile.previousPosition) {
+      // ???
       // Make sure that the tile gets rendered in the previous position first
-      window.requestAnimationFrame(function () {
-        classes[2] = self.positionClass({ x: tile.x, y: tile.y });
-        self.applyClasses(element, classes); // Update the position
+      window.requestAnimationFrame(() => {
+        classes[2] = this.positionClass({ x: tile.x, y: tile.y });
+        this.applyClasses(element, classes); // Update the position
       });
-    } else if (tile.mergedFrom) {
-      classes.push("tile-merged");
+    } else if(tile.mergedFrom) {
+      classes.push('tile-merged');
       this.applyClasses(element, classes);
-
-      // Render the tiles that merged
-      tile.mergedFrom.forEach(function (merged) {
-        self.addTile(merged);
-      });
+      tile.mergedFrom.forEach(sourceTile => {
+        this.addTile(sourceTile)
+      })
     } else {
-      classes.push("tile-new");
+      classes.push('tile-new');
       this.applyClasses(element, classes);
     }
 
-    // Put the tile on the board
     this.tileContainer.appendChild(element);
-  };
 
-  HTMLActuator.prototype.applyClasses = function (element, classes) {
-    element.setAttribute("class", classes.join(" "));
-  };
+  }
 
-  HTMLActuator.prototype.normalizePosition = function (position) {
-    return { x: position.x + 1, y: position.y + 1 };
-  };
+  restart(): void {
+    this.clearMessage();
+  }
 
-  HTMLActuator.prototype.positionClass = function (position) {
-    position = this.normalizePosition(position);
-    return "tile-position-" + position.x + "-" + position.y;
-  };
+  clearContainer(container: Element): void {
+    while(container.firstChild) {
+      container.removeChild(container.firstChild)
+    }
+  }
 
-  HTMLActuator.prototype.updateScore = function (score) {
+  message(won: boolean): void {
+    this.messageContainer.classList.add(won ? "game-won" : "game-over");
+    this.messageContainer.querySelector("p").textContent = won ? "You win!" : "Game over!";
+  }
+
+  clearMessage(): void {
+    this.messageContainer.classList.remove("game-won", "game-over");
+  }
+
+  updateScore(score: number): void {
     this.clearContainer(this.scoreContainer);
-
-    var difference = score - this.score;
+    const difference = score - this.score;
     this.score = score;
 
-    this.scoreContainer.textContent = this.score;
+    this.scoreContainer.textContent = score.toString();
 
     if (difference > 0) {
-      var addition = document.createElement("div");
+      const addition = document.createElement("div");
       addition.classList.add("score-addition");
       addition.textContent = "+" + difference;
-
+  
       this.scoreContainer.appendChild(addition);
     }
-  };
+  }
 
-  HTMLActuator.prototype.message = function (won) {
-    var type = won ? "game-won" : "game-over";
-    var message = won ? "You win!" : "Game over!";
+  applyClasses(ele: Element, classes: string[]): void {
+    ele.setAttribute("class", classes.join(" "));
+  }
 
-    // if (ga) ga("send", "event", "game", "end", type, this.score);
+  normalizePosition(position: Position): Position {
+    return { x: position.x + 1, y: position.y + 1 };
+  }
 
-    this.messageContainer.classList.add(type);
-    this.messageContainer.getElementsByTagName("p")[0].textContent = message;
-  };
+  positionClass(position: Position): string {
+    position = this.normalizePosition(position);
+    return `tile-position-${position.x}-${position.y}`;
+  }
 
-  HTMLActuator.prototype.clearMessage = function () {
-    this.messageContainer.classList.remove("game-won", "game-over");
-  };
+}
 
-  export default HTMLActuator;
+export default HTMLActuator;
